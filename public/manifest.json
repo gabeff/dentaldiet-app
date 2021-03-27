@@ -1,0 +1,25 @@
+{
+  "short_name": "Dental Diet",
+  "name": "Sistema para consulta de alimentos, bebidas e suplementos que apresentam risco para o desenvolvimento de cárie e erosão dentária.",
+  "icons": [
+    {
+      "src": "favicon-64x64.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#fae596",
+  "background_color": "#173e43"
+}

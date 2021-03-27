@@ -1,0 +1,21 @@
+.Atividades {
+  padding: 5px;
+}
+
+.MuiButtonBase-root .MuiToggleButton-root {
+  color: #ffef96;
+  font-size: 0.875rem;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 500;
+  line-height: 1.75;
+  letter-spacing: 0.02857em;
+}
+
+.btnEmoji {
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+}

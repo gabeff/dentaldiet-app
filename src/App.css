@@ -1,0 +1,125 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #dddfd4;
+  min-height: 100%;
+}
+
+body, input, button {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.rna-container {
+  z-index: 1500;
+  position: fixed;
+}
+
+.main-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 50px 0;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.main-wide-container {
+  max-width: 95%;
+  margin: 0 auto;
+  padding: 50px 0;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.wide-container {
+  text-align: left;
+}
+
+.container {
+  text-align: left;
+}
+
+.main-container .update-icon  {
+  color: rgb(196, 196, 196);
+  margin-right: 10px;
+  float: right;
+}
+
+.main-container .del-icon  {
+  color: rgb(196, 196, 196);
+  margin-right: 10px;
+  float: right;
+}
+
+.main-container .del-icon:hover  {
+  color: #dc3545;
+  cursor: pointer;
+}
+
+.main-container .update-icon:hover  {
+  color: #28a745;
+  cursor: pointer;
+}
+
+.btn-primary {
+  border: 0;
+  border-radius: 4px;
+  font-size: 20px;
+  background: #fae596;
+  font-weight: bold;
+  color: #173e43;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  border: 0;
+  border-radius: 4px;
+  font-size: 20px;
+  background: #173e43;
+  font-weight: bold;
+  color: #fae596;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  border: 0;
+  border-radius: 4px;
+  font-size: 20px;
+  background: #fff1bf;
+  font-weight: bold;
+  color: #2a5f66;
+  cursor: not-allowed;
+}
+
+.main-container input:invalid {
+  -moz-mox-shadow: none;
+}
+
+.icons {
+  height: auto;
+  width: 100%;
+  margin-bottom: 15%;
+}
+
+.icons .logo {
+  height: auto;
+  width: 100%;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  background-color: #dddfd4;
+}

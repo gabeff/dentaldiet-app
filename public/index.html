@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dental Diet</title>
+
+    <link rel="preconnect" href="https://dentaldiet.herokuapp.com">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+
+     <link rel="manifest" href="/manifest.json">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="/__/firebase/7.19.1/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="/__/firebase/7.19.1/firebase-analytics.js"></script>
+    <script src="/__/firebase/7.19.1/firebase-messaging.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script src="/__/firebase/init.js"></script>
+
+    <script>
+      // [START get_messaging_object]
+      // Retrieve Firebase Messaging object.
+      const messaging = firebase.messaging();
+      // [END get_messaging_object]
+      // [START set_public_vapid_key]
+      // Add the public key generated from the console here.
+      messaging.usePublicVapidKey('BHIT_cSQcABzlvTmpKkvlNanxG92fZKHOsp7iOugLlaNgTTtCTI_60aM_AfQ9-rRxL6Xbl9JDUaakHsUozm_wuc');
+      // [END set_public_vapid_key]
+    
+      // [START refresh_token]
+      // Callback fired if Instance ID token is updated.
+      messaging.onTokenRefresh(() => {
+        messaging.getToken().then((refreshedToken) => {
+          console.log('Token refreshed.');
+          // Indicate that the new Instance ID token has not yet been sent to the
+          // app server.
+          setTokenSentToServer(false);
+          // Send Instance ID token to app server.
+          sendTokenToServer(refreshedToken);
+          console.log(refreshedToken);
+          // [START_EXCLUDE]
+          // Display new Instance ID token and clear UI of all previous messages.
+          resetUI();
+          // [END_EXCLUDE]
+        }).catch((err) => {
+          console.log('Unable to retrieve refreshed token ', err);
+        });
+      });
+      // [END refresh_token]
+    
+      function resetUI() {
+        // [START get_token]
+        // Get Instance ID token. Initially this makes a network call, once retrieved
+        // subsequent calls to getToken will return from cache.
+        messaging.getToken().then((currentToken) => {
+          if (currentToken) {
+            sendTokenToServer(currentToken);
+            console.log(currentToken);
+          } else {
+            // Show permission request.
+            console.log('No Instance ID token available. Request permission to generate one.');
+            // Show permission UI.
+            setTokenSentToServer(false);
+          }
+        }).catch((err) => {
+          console.log('An error occurred while retrieving token. ', err);
+          setTokenSentToServer(false);
+        });
+        // [END get_token]
+      }
+    
+      // Send the Instance ID token your application server, so that it can:
+      // - send messages back to this app
+      // - subscribe/unsubscribe the token from topics
+      function sendTokenToServer(currentToken) {
+        if (!isTokenSentToServer()) {
+          console.log('Sending token to server...');
+          // TODO(developer): Send the current token to your server.
+          setTokenSentToServer(true);
+        } else {
+          console.log('Token already sent to server so won\'t send it again ' +
+              'unless it changes');
+        }
+    
+      }
+    
+      function isTokenSentToServer() {
+        return window.localStorage.getItem('sentToServer') === '1';
+      }
+    
+      function setTokenSentToServer(sent) {
+        window.localStorage.setItem('sentToServer', sent ? '1' : '0');
+      }
+    
+      function requestPermission() {
+        console.log('Requesting permission...');
+        // [START request_permission]
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            console.log('Notification permission granted.');
+            // TODO(developer): Retrieve an Instance ID token for use with FCM.
+            // [START_EXCLUDE]
+            // In many cases once an app has been granted notification permission,
+            // it should update its UI reflecting this.
+            resetUI();
+            // [END_EXCLUDE]
+          } else {
+            console.log('Unable to get permission to notify.');
+          }
+        });
+        // [END request_permission]
+      }
+    
+      function deleteToken() {
+        // Delete Instance ID token.
+        // [START delete_token]
+        messaging.getToken().then((currentToken) => {
+          messaging.deleteToken(currentToken).then(() => {
+            console.log('Token deleted.');
+            setTokenSentToServer(false);
+            // [START_EXCLUDE]
+            // Once token is deleted update UI.
+            resetUI();
+            // [END_EXCLUDE]
+          }).catch((err) => {
+            console.log('Unable to delete token. ', err);
+          });
+          // [END delete_token]
+        }).catch((err) => {
+          console.log('Error retrieving Instance ID token. ', err);
+        });
+    
+      }
+
+      resetUI();
+    </script>
+  </body>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      console.log("Will the service worker register?");
+      navigator.serviceWorker.register('service-worker.js')
+        .then(function(reg){
+          console.log("Yes, it did.");
+        }).catch(function(err) {
+          console.log("No it didn't. This happened: ", err)
+        });
+
+      
+      console.log("Will the firebase messaging service worker register?");
+      navigator.serviceWorker.register('firebase-messaging-sw.js')
+        .then(function(reg){
+          console.log("Yes, it did.");
+        }).catch(function(err) {
+          console.log("No it didn't. This happened: ", err)
+        });
+    }
+  </script>
+</html>
