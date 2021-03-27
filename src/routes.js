@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import Login from './pages/Login';
+import ForgotPass from './pages/ForgotPass';
+import ChangePass from './pages/ChangePass';
 
 import Cadastrar from './pages/Usuario/Cadastrar';
 import Perfil from './pages/Usuario/Perfil';
@@ -34,6 +36,8 @@ class Routes extends React.Component {
                     <Route path="/" exact render={(props) => <Login {...props} app={this.props} />} />
                     <Route path="/Confirm/:id" render={(props) => <Login {...props} app={this.props}/>} />
                     <Route path="/Usuario/Cadastrar" render={(props) => <Cadastrar {...props} app={this.props} />} />
+                    <Route path="/EsqueciMinhaSenha" render={(props) => <ForgotPass {...props} app={this.props}/>} />
+                    <Route path="/AlterarSenha/:token" render={(props) => <ChangePass {...props} app={this.props}/>} />
                     <NavRoute p={this.props} exact path="/Usuario/Perfil" component={Perfil}/>
                     <NavRoute p={this.props} exact path="/Usuario/Diario" component={Diario}/>
                     <NavRoute p={this.props} exact path="/Usuario/Calendario" component={Calendario}/>

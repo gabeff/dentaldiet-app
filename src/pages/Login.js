@@ -188,7 +188,7 @@ const Login = (p) => {
 
                                     <button type="submit">Entrar</button>
                                     <span style={{width: '100%', marginTop: '0.25rem', fontSize: '80%'}}>
-                                        <a href="/Usuario/EsqueciMinhaSenha">Esqueceu sua senha?</a>
+                                        <a href="/EsqueciMinhaSenha">Esqueceu sua senha?</a>
                                     </span>
                                     <br/>
 
