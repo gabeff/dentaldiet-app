@@ -15,7 +15,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 import TableAlimentos from '../../layout/TableAlimentos';
 
-import dentaldietApi from '../../services/api';
+import api from '../../services/api';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -67,7 +67,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const DietaDialog = (p) => {
 
-    const api = dentaldietApi(p.app.state.token);
     const classes = useStyles();
     const [openDieta, setopenDieta] = useState(false);
 
@@ -144,7 +143,7 @@ const DietaDialog = (p) => {
           feedAlimentosOptions();
         }
 
-    }, [alimentoOptions, p.alimentos, p.user._id])
+    }, [alimentoOptions, p.alimentos, p.user])
 
     //Carregar refeições para popular lista de sugestões
     useEffect(() => {
@@ -168,12 +167,12 @@ const DietaDialog = (p) => {
         feedRefeicoesOptions();
       }
 
-    }, [refeicaoOptions, p.refeicoes, p.user._id]);
+    }, [refeicaoOptions, p.refeicoes, p.user]);
 
     async function selectAlimento(alimento) {
         
         if (alimento && alimento.__isNew__) {
-            api.post('/createAlimento', {alimento: {descricao: alimento.value}}).then((response) => {
+            api.post('/createAlimento', {alimento: {descricao: alimento.value, user_id: p.user._id}}).then((response) => {
                 if (response.status === 200) {
                     setAlimento(response.data);      
                     p.loadAlimentos(); 

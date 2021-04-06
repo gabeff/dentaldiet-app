@@ -3,7 +3,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import ptBR from 'date-fns/locale/pt-BR';
 import 'moment/locale/pt-br';
 
-import dentaldietApi from '../../services/api';
+import api from '../../services/api';
 
 import PrivacidadeDialog from './PrivacidadeDialog';
 import TermosDialog from './TermosDialog';
@@ -11,8 +11,6 @@ import TermosDialog from './TermosDialog';
 registerLocale('pt-BR', ptBR);
 
 const Cadastrar = (p) => {
-
-    const api = dentaldietApi(p.app.state.token);
 
     const [user, setUser] = useState({
         email: '',
@@ -46,8 +44,6 @@ const Cadastrar = (p) => {
 
     //atualiza dados do usuário 
     const modifyUser = e => {
-
-        console.log(e.target);
         
         let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value; 
         if (e.target.type === 'number') value = value.replace(',', '.');

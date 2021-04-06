@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import NotificationAlert from 'react-notification-alert';
 import { instanceOf } from 'prop-types';
-import { CookiesProvider, withCookies, Cookies } from 'react-cookie';
+import { withCookies, Cookies } from 'react-cookie';
+import { DentaldietProvider } from './DentaldietContext';
 import './App.css';
 
 import Routes from './routes';
 
-class App extends Component {
+class App extends Component {  
 
   static propTypes = {
     cookies: instanceOf(Cookies).isRequired
@@ -16,6 +17,7 @@ class App extends Component {
     super(props);
     
     const { cookies } = props;
+
     this.state = {
       user: cookies.get('user'),
       token: cookies.get('token'),
@@ -74,19 +76,18 @@ class App extends Component {
 
   render() {
     return (
-      <CookiesProvider>
+      <DentaldietProvider value={this.state}>
         <div className="rna-container">
           <NotificationAlert ref={this.notifyRef} />
         </div>
         <Routes
-          state={this.state}
           removeCookie={this.removeCookie}
           setDateDiario={this.setDateDiario}
           setCookie={this.setCookie}
           notify={this.notify}
           dismissNotify={this.dismissNotify}
         />
-      </CookiesProvider>
+      </DentaldietProvider>
     );
   }
 }

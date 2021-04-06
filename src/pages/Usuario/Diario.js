@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
@@ -9,7 +9,9 @@ import 'moment/locale/pt-br';
 import "react-datepicker/dist/react-datepicker.css";
 import './Diario.css';
 
-import dentaldietApi from '../../services/api';
+import api from '../../services/api';
+
+import DentaldietContext from '../../DentaldietContext';
 
 import DietaDialog from './DietaDialog';
 import CartaoRefeicao from '../../layout/CartaoRefeicao';
@@ -22,68 +24,16 @@ registerLocale('pt-BR', ptBR);
 
 const Humor = (p) => {
 
-    const api = dentaldietApi(p.app.state.token);
-    const [user, setUser] = useState({
-        _id: ''
-    });
+    const {user, dateDiario} = useContext(DentaldietContext);
     const [alimentos, setAlimentos] = useState([]);
     const [refeicoes, setRefeicoes] = useState([]);
-    const [dieta, setDieta] = useState([]);
-    const dateDiario = p.app.state.dateDiario;
+    const [dieta, setDieta] = useState();
 
-    //carregar usuario e atividades
-    useEffect(() => {
-
-        if (p.app.state.user) {
-            setUser(p.app.state.user);
-        } else {
-            p.history.push('/');
-        };
-
-        findDieta();
-        
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [p]);
-
-    async function loadAlimentos() {
-
-        api.get('/listAlimento').then((response, err) => {
-
-            if (response.status === 200) {
-                setAlimentos(response.data);
-            } else {
-                setAlimentos([]);
-            }
-
-        }).catch((err) => {
-            console.error(err);
-        });
-    }
-
-    async function loadRefeicoes() {
-
-        api.get('/listRefeicoes').then((response, err) => {
-
-            if (response.status === 200) {
-                setRefeicoes(response.data);
-            } else {
-                setRefeicoes([]);
-            }
-
-        }).catch((err) => {
-            console.error(err);
-        });
-    }
-
-    //carregar atividades cadastradas
-    async function findDieta() {
-        
-        await loadRefeicoes();
-        await loadAlimentos();
+    const fetchDieta = useCallback(() => {
 
         const body = {
-            userid: p.app.state.user._id, 
-            data: p.app.state.dateDiario
+            userid: user._id, 
+            data: dateDiario
         };
 
         api.post('/findDieta', body )
@@ -94,26 +44,32 @@ const Humor = (p) => {
         }).catch((err) => {
             console.error(err);
         });
-    }
+    }, [user, dateDiario]);
 
-    useEffect(() => {
-        var refs = refeicoes;
-
-        dieta.map((dieta) => {
-            return refs = refs.filter(a => a._id !== dieta.refeicao._id);
+    
+    
+    const fetchAlimentos = useCallback(() => {
+        
+        api.get('/listAlimento', {headers: {user_id: user._id}}).then((response) => {
+            
+            if (response.status === 200) {
+                setAlimentos(response.data);
+            } else {
+                setAlimentos([]);
+            }
+            
+        }).catch((err) => {
+            console.error(err);
         });
+    }, [user]);
 
-        setRefeicoes(refs);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dieta]);
-
-    async function deletarDieta(dieta) {
+    function deletarDieta(dieta) {
 
         api.post('/deleteDieta', {dieta}).then((response) => {
 
             if (response.status === 200) {
                 p.app.notify('success', 'Refeição deletada com sucesso!', 2);
-                findDieta();
+                fetchDieta();
             } else {
                 p.app.notify('danger', response.data, 2);
             }
@@ -122,6 +78,48 @@ const Humor = (p) => {
             if (err.response.data) { p.app.notify('danger', err.response.data, 2); };
         });
     }
+    
+    //carregar dietas do usuário
+    useEffect(() => {
+
+        fetchDieta();  
+    }, [fetchDieta]);
+    
+    //carregar dietas do usuário
+    useEffect(() => {
+
+        fetchAlimentos();  
+    }, [fetchAlimentos]);
+
+    //carregar refeicoes da dieta
+    useEffect(() => {
+
+        function fetchRefeicoes() {
+            
+            api.get('/listRefeicoes').then((response, err) => {
+                
+                if (response.status === 200) {
+
+                    var refeicoes = response.data;
+                    dieta.map((dieta) => {
+                        return refeicoes = refeicoes.filter(a => a._id !== dieta.refeicao._id);
+                    });
+
+                    setRefeicoes(refeicoes);
+                } else {
+                    setRefeicoes([]);
+                }
+                
+            }).catch((err) => {
+                console.error(err);
+            });
+        };
+        
+        if (dieta) {
+            fetchRefeicoes();
+        }
+    }, [dieta]);
+
 
     return (
         <div>
@@ -159,9 +157,9 @@ const Humor = (p) => {
                                         refeicoes={refeicoes}
                                         user={user}
                                         app={p.app}
-                                        data={p.app.state.dateDiario}
-                                        findDieta={findDieta}
-                                        loadAlimentos={loadAlimentos}
+                                        data={dateDiario}
+                                        findDieta={fetchDieta}
+                                        loadAlimentos={fetchAlimentos}
                                     />
                                 </div>
                             </div>
@@ -176,7 +174,6 @@ const Humor = (p) => {
                             <Typography 
                                     gutterBottom 
                                     variant="subtitle2" 
-                                    component="subtitle2" 
                             >
                                 <Grid>
                                     <img src={phRuim} height={"30"} alt='ph ruim'/> - Alimento com pH Ácido
@@ -199,7 +196,7 @@ const Humor = (p) => {
                                     notify={p.app.notify}
                                     history={p.history}
                                     app={p.app}
-                                    findDieta={findDieta}
+                                    findDieta={fetchDieta}
                                     deletarDieta={deletarDieta}
                                 />
                             )))

@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import DatePicker, { registerLocale } from "react-datepicker";
 import ptBR from 'date-fns/locale/pt-BR';
 import 'moment/locale/pt-br';
 
-import dentaldietApi from '../../services/api';
+import api from '../../services/api';
+
+import DentaldietContext from '../../DentaldietContext';
 
 registerLocale('pt-BR', ptBR);
 
 const Perfil = (p) => {
 
-    const api = dentaldietApi(p.app.state.token);
-
+    const context = useContext(DentaldietContext);
     const [user, setUser] = useState({
         nascimento: new Date()
     });
@@ -66,7 +67,6 @@ const Perfil = (p) => {
                 p.app.notify('warning', response.data, 2);
             }
         }).catch((err) => {
-            console.log('Will log error');
             console.error(err);
             p.app.notify('danger', err.response.data, 2);
         });
@@ -75,16 +75,11 @@ const Perfil = (p) => {
     //carregar usuario
     useEffect(() => {
 
-      if (p.app.state.user) {
-          setUser(p.app.state.user);
-      } else {
-          p.history.push('/');
-      };
-
-    }, [p]); 
+        setUser(context.user);
+    }, [context]); 
 
     useEffect(() => {
-        console.log(user.nascimento);
+
         setDataNascimento(new Date(user.nascimento));
     }, [user.nascimento]);
 
@@ -111,7 +106,7 @@ const Perfil = (p) => {
                                     className="form-control"
                                     name="email"
                                     disabled
-                                    value={user.email}
+                                    value={user.email || ''}
                                     onChange={modifyUser}
                                 />
                             </div>
@@ -124,7 +119,7 @@ const Perfil = (p) => {
                                     type="text"
                                     className="form-control"
                                     name="nome"
-                                    value={user.nome}
+                                    value={user.nome || ''}
                                     onChange={modifyUser}
                                 />
                             </div>
@@ -219,7 +214,7 @@ const Perfil = (p) => {
                                     type="text"
                                     className="form-control"
                                     name="altura"
-                                    value={user.altura}
+                                    value={user.altura || ''}
                                     placeholder="Informe sua altura em centimetros"
                                     onChange={modifyUser}
                                 />
@@ -231,7 +226,7 @@ const Perfil = (p) => {
                                     type="text"
                                     className="form-control"
                                     name="peso"
-                                    value={user.peso}
+                                    value={user.peso || ''}
                                     placeholder="Informe seu peso em quilogramas"
                                     onChange={modifyUser}
                                 />

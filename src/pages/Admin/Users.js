@@ -6,11 +6,10 @@ import Dialog from '@material-ui/core/Dialog';
 import Cadastrar from '../Usuario/Cadastrar';
 import Perfil from '../Usuario/Perfil';
 
-import iHelpAPI from '../../services/api';
+import api from '../../services/api';
 
 const Users = (p) => {
 
-    const api = iHelpAPI(p.app.state.token);
     const isMedium = useMediaQuery('(max-width: 1072px)');
     const isMobile = useMediaQuery('(max-width: 768px)');
     const [selectedUser, setSelectedUser] = useState();

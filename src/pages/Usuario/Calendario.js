@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import { momentLocalizer } from 'react-big-calendar';
 
 import BigCalendar from '../../layout/BigCalendar';
 
-import dentaldietApi from '../../services/api';
+import api from '../../services/api';
+
+import DentaldietContext from '../../DentaldietContext';
 
 const Calendario = (p) => {
 
-    const api = dentaldietApi(p.app.state.token);
-
-    const user = p.app.state.user;
+    const {user, dateDiario} = useContext(DentaldietContext);
     const [dieta, setDieta] = useState([]);
 
     const pLocalizer = momentLocalizer(moment);
@@ -27,7 +27,6 @@ const Calendario = (p) => {
         };
 
         const response = await api.get('/listDieta', userHeaders);
-        console.log(response.data);
         setDieta(response.data);
     }
 

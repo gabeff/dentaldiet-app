@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 
 import './Login.css';
 
-import iHelpAPI from '../services/api';
+import DentaldietApi from '../services/api';
 import logo from '../assets/logo.png';
 import logo192 from '../assets/logo192.png';
 
@@ -19,31 +19,22 @@ const Login = (p) => {
         confirmed: false
     });
     const [msgErro, setMsgErro] = useState({ error: '' });
-    const api = iHelpAPI(p.app.state.token);
+    const api = DentaldietApi;
     const [serverUP, setServerUP] = useState(false);
 
     async function checkServerUP() {
-        
-        var isServerUp = false;
 
-        for (var i = 0; i < 10; i++) {
-            await api.get('/').then((response) => {
-                if (response.status === 200) {
-                    setServerUP(true);
-                    i = 11;
-                    isServerUp = true;
-                } else {
-                    setServerUP(false);
-                }
-            }).catch((err) => {
-                console.error(err);
+        await api.get('/', {timeout: 1000}).then((response) => {
+            if (response.status === 200) {
+                setServerUP(true);
+                return;
+            } else {
                 setServerUP(false);
-            });
-        }
- 
-        if (!isServerUp) {
-            p.app.notify('danger', 'Servidor inacessível no momento, favor atualizar a página em alguns instantes e tentar novamente.', 2);
-        }
+            }
+        }).catch((err) => {
+            console.error(err);
+            setServerUP(false);
+        });
     }
 
     useEffect(() => {
@@ -67,11 +58,13 @@ const Login = (p) => {
         })
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
+        await checkServerUP();
+
         if (!serverUP) {
-            p.app.notify('danger', 'Servidor inacessível no momento, favor atualizar a página em alguns instantes e tentar novamente.', 2);
+            p.app.notify('danger', 'Servidor inacessível no momento, favor tentar novamente em alguns instantes.', 2);
             return false;
         }
 
@@ -85,6 +78,7 @@ const Login = (p) => {
                 if (token !== null) {
 
                     p.app.setCookie('token', token);
+                    localStorage.setItem('@dentaldiet/access', token);
                     p.app.setCookie('user', user);
 
                      p.history.push('/Usuario/Diario');
@@ -134,17 +128,17 @@ const Login = (p) => {
                             <img src={logo192} alt='Dental Diet' style={{height: '192px', width: '192px', marginTop: '20px', marginBottom: '20px'}}/>
 
                             <br/>
-                            <Typography variant="body1" component="body1">
+                            <Typography variant="body1">
                                 Neste aplicativo, você irá identificar os alimentos, bebidas e suplementos que apresentam risco 
                                 para o desenvolvimento de cárie e erosão dentária.
                             </Typography>
                             <br/><br/>
-                            <Typography variant="body1" component="body1">
+                            <Typography variant="body1">
                             Após o registro do diário alimentar, os alimentos em destaque serão identificados e, em seguida, 
                             você receberá algumas dicas em saúde bucal.
                             </Typography>
                             <br/><br/>
-                            <Typography variant="subtitle2" component="subtitle2">
+                            <Typography variant="subtitle2">
                             Mas atenção! Este aplicativo não substitui a consulta odontológica ou outros cuidados em saúde 
                             que necessitem de um profissional. 
                             </Typography>
